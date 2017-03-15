@@ -3,11 +3,13 @@ require "rubygems"
 require "colorize"
 require "streamio-ffmpeg"
 require "io/console"
+require "ruby-progressbar"
 
 class ListMovie
 	attr_reader :list
 
 	def initialize(path)
+        @progressbar = ProgressBar.create
 		@path = path
         @width = 700 # 720
         @height = 320 #340
@@ -71,7 +73,7 @@ class ListMovie
 
     def checkMinSize(file)
         if (file.size and file.size < @minSize*1000000000)
-            @error["lowSize"] = " Size:" + file.size
+            @error["lowSize"] = " Size:" + file.size.to_s
             @error["number"] += 1
         end
     end
@@ -85,7 +87,7 @@ class ListMovie
 
     def checkChannels(file)
         if (file.audio_channels and file.audio_channels < @audioChannels.to_i)
-            @error["audioChannels"] = " AudioChannels:" + file.audio_channels
+            @error["audioChannels"] = " AudioChannels:" + file.audio_channels.to_s
             @error["number"] += 1
         end
     end
@@ -126,8 +128,10 @@ class ListMovie
     end
 
 	def check
+        @progressbar.total = list.length
 		contain = %w(avi mkv mov mp4 mpg mpeg wmv rm 3gp webm flv)
 		@list.each do |movie|
+            @progressbar.increment
             file = FFMPEG::Movie.new(movie)
 			if movie.end_with? *contain
                 @error = Hash.new

@@ -1,4 +1,6 @@
+#!/usr/bin/ruby
 load "lib/video.rb"
+load "lib/music.rb"
 
 # check-media <type> <path>
 
@@ -23,8 +25,8 @@ end
 
 if (ARGV[0] and ARGV[0] == "musique")
 	verbose = 1
-    movie = ListMovie.new(conf, verbose)
-    movie.List
-    movie.Check
-    movie.Result
+    music = ListMusic.new(ARGV[1])
+    music.list
+    music.check
+    # music.Result
 end
